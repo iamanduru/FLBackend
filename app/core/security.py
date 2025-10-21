@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta, timezone
 import jwt
-from argon2 import PasswordHarsher
+from argon2 import PasswordHasher
 from typing import Any, Dict
 from .config import settings
 
-ph = PasswordHarsher()
+ph = PasswordHasher()
 
 def hash_password(password: str) -> str:
     return ph.hash(password)
@@ -23,7 +23,7 @@ def create_jwt(payload: Dict[str, Any], expires_delta: timedelta) -> str:
     return jwt.encode(to_encode, settings.jwt_secret, algorithm=settings.jwt_alg)
 
 def create_access_token(sub: str) -> str:
-    return create_jwt({"sub": sub, "typ": "access"}, timedelta(minutes=settings.jwt_alg))
+    return create_jwt({"sub": sub, "typ": "access"}, timedelta(minutes=settings.access_token_expire_minutes))
 
 def create_refresh_token(sub: str) -> str:
-    return create_jwt({"sub": sub, "type": "refresh"}, timedelta(days=settings.refresh_token_expire_days))
+    return create_jwt({"sub": sub, "typ": "refresh"}, timedelta(days=settings.refresh_token_expire_days))
